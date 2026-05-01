@@ -16,7 +16,7 @@ A full-stack web application for team project and task management with role-base
 ### Backend
 - **Java 17** with Spring Boot 3.2
 - **Spring Security** with JWT authentication
-- **H2 Database** (easily switchable to MySQL)
+- **MySQL Database** for persistent storage
 - **Maven** for build management
 
 ### Frontend
@@ -30,6 +30,7 @@ A full-stack web application for team project and task management with role-base
 - Java JDK 17 or higher
 - Maven 3.6 or higher
 - Flutter SDK 3.x
+- MySQL Database (local or Docker)
 
 ### Running Locally
 
@@ -85,13 +86,24 @@ A full-stack web application for team project and task management with role-base
 
 ## Database Configuration
 
-The application uses H2 database by default. To switch to MySQL, update `application.properties`:
+The application uses MySQL database for persistent storage. The configuration is already set up in `application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/taskmanagerdb
+spring.datasource.url=jdbc:mysql://localhost:3307/taskmanagerdb
 spring.datasource.username=root
-spring.datasource.password=yourpassword
+spring.datasource.password=root
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+```
+
+### Setting up MySQL with Docker
+
+```bash
+# Run MySQL container
+docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=taskmanagerdb -p 3307:3306 -d mysql:8.0
+
+# Create database (if needed)
+docker exec -it mysql-container mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS taskmanagerdb;"
 ```
 
 ## Deployment
