@@ -325,6 +325,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Member added successfully')),
                             );
+                            // Refresh the projects list to show updated members
+                            _loadProjects();
                           }
                         } catch (e) {
                           setDialogState(() => isAdding = false);
@@ -471,6 +473,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Member removed')),
         );
+        // Refresh the projects list to show updated members
+        _loadProjects();
+        // Also show the updated members dialog
         _showMembersDialog(projectId, projectName);
       }
     } catch (e) {

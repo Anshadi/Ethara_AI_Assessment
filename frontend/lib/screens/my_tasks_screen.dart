@@ -75,6 +75,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
     int? selectedUserId;
     String selectedPriority = 'MEDIUM';
     bool isCreating = false;
+    List<dynamic> projectMembers = [];
 
     showDialog(
       context: context,
@@ -121,7 +122,26 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                     items: _projects.map((p) {
                       return DropdownMenuItem<int>(value: p['id'], child: Text(p['name']));
                     }).toList(),
-                    onChanged: (v) => setDialogState(() => selectedProjectId = v),
+                    onChanged: (v) async {
+                      setDialogState(() {
+                        selectedProjectId = v;
+                        selectedUserId = null; // Reset user selection when project changes
+                        projectMembers = []; // Reset members list
+                      });
+                      if (v != null) {
+                        try {
+                          final members = await _apiService.getProjectMembers(v);
+                          print('Loaded members for project $v: $members');
+                          setDialogState(() {
+                            projectMembers = members.where((m) => m['role'] != 'ADMIN').toList();
+                            print('Filtered members (non-admin): $projectMembers');
+                          });
+                        } catch (e) {
+                          print('Error loading members: $e');
+                          // Handle error silently
+                        }
+                      }
+                    },
                     validator: (v) => v == null ? 'Please select a project' : null,
                   ),
                   const SizedBox(height: 14),
@@ -131,7 +151,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.person_outlined),
                     ),
-                    items: _users.where((u) => u['role'] != 'ADMIN').map((u) {
+                    items: projectMembers.map((u) {
                       return DropdownMenuItem<int>(
                         value: u['id'],
                         child: Text('${u['name']} (${u['role']})'),
@@ -139,6 +159,11 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                     }).toList(),
                     onChanged: (v) => setDialogState(() => selectedUserId = v),
                     validator: (v) => v == null ? 'Please select a user' : null,
+                    hint: selectedProjectId == null 
+                        ? const Text('Select a project first')
+                        : projectMembers.isEmpty 
+                            ? const Text('No members available')
+                            : null,
                   ),
                   const SizedBox(height: 14),
                   DropdownButtonFormField<String>(
