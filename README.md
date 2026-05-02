@@ -1,137 +1,102 @@
 # Team Task Manager
 
-A full-stack web application for team project and task management with role-based access control.
+A professional full-stack project and task management system designed for collaborative team environments. This application provides a streamlined workflow for project leads and members to track progress, manage assignments, and maintain visibility over team productivity.
 
-## Features
+## Core Features
 
-- **Authentication**: User signup/login with JWT tokens
-- **Role-Based Access**: Admin and Member roles with different permissions
-- **Project Management**: Create projects and manage team members
-- **Task Management**: Create, assign, and track task progress
-- **Dashboard**: Real-time task statistics and overview
-- **Responsive Design**: Modern UI built with Flutter
+- **Robust Security**: Secure user registration and login powered by JWT (JSON Web Tokens).
+- **Advanced Role-Based Access (RBAC)**: Distinct permissions for `ADMIN` and `MEMBER` roles to ensure data integrity and proper authorization.
+- **Dynamic Project Control**:
+  - Administrative creation and deletion of projects.
+  - Seamless team member management (adding and removing participants).
+- **Intelligent Task Tracking**:
+  - Detailed task creation with descriptions and due dates.
+  - Granular assignment capabilities to specific project members.
+  - Real-time status updates (Todo, In Progress, Done).
+- **Analytical Dashboard**:
+  - High-level overview of project health and task counts.
+  - **Team Workload Visualization**: Dedicated admin view to monitor member performance and task distribution.
+  - **Dynamic Status Reporting**: Smart alerts for overdue tasks and pending workloads.
 
-## Tech Stack
+## Technical Architecture
 
-### Backend
-- **Java 17** with Spring Boot 3.2
-- **Spring Security** with JWT authentication
-- **MySQL Database** for persistent storage
-- **Maven** for build management
+The system utilizes a modern, scalable tech stack to deliver a high-performance experience:
 
-### Frontend
-- **Flutter** for cross-platform web development
-- **Material Design** UI components
-- **HTTP** for API communication
+### Backend Architecture
+- **Framework**: Java 17 with Spring Boot 3.2.
+- **Security**: Spring Security integrated with JWT for stateless authentication.
+- **Data Layer**: Hibernate/JPA for efficient object-relational mapping.
+- **Database**: MySQL 8.0 for persistent, reliable storage.
+- **Transaction Management**: Atomic operations for complex deletions and updates.
 
-## Quick Start
+### Frontend Experience
+- **Framework**: Flutter Web for a responsive, single-page application (SPA) experience.
+- **UI/UX**: Clean, modern Material Design interface with custom interactive components.
+- **State Management**: Reactive UI updates based on real-time API feedback.
+
+## Deployment & Execution
 
 ### Prerequisites
-- Java JDK 17 or higher
-- Maven 3.6 or higher
+- Java JDK 17+
+- Maven 3.6+
 - Flutter SDK 3.x
-- MySQL Database (local or Docker)
+- MySQL Instance (Accessible via Docker or Local Installation)
 
-### Running Locally
+### Quick Start Guide
 
-1. **Clone the repository**
+1. **Database Setup**:
+   Ensure a MySQL database is running. If using Docker:
    ```bash
-   git clone https://github.com/Anshadi/Ethara_AI_Assessment.git
-   cd Ethara_AI_Assessment
+   docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=taskmanagerdb -p 3307:3306 -d mysql:8.0
    ```
 
-2. **Build and Run**
+2. **Frontend Build**:
+   Navigate to the `frontend` directory and compile the web application:
    ```bash
-   # For Windows
-   run.bat
-   
-   # For Linux/Mac
-   ./run.sh
+   cd frontend
+   flutter build web
    ```
 
-3. **Access the Application**
-   - Open your browser and navigate to `http://localhost:8081`
+3. **Backend Integration**:
+   Copy the generated build from `frontend/build/web` to `backend/src/main/resources/static`.
 
-## Usage
+4. **Launch Application**:
+   Navigate to the `backend` directory and start the Spring Boot server:
+   ```bash
+   cd backend
+   mvn spring-boot:run
+   ```
+   The application will be accessible at `http://localhost:8081`.
 
-### Admin Features
-- Create and manage projects
-- Add/remove team members
-- Create and assign tasks to members
-- View all tasks and their progress
-- Delete tasks
+## Project Organization
 
-### Member Features
-- View assigned tasks
-- Update task status
-- View project details
+The repository is structured to separate concerns and facilitate easy maintenance:
 
-## API Endpoints
+### Backend Structure (`backend/`)
+- **`src/main/java/com/taskmanager/`**: Core Java package
+  - **`controller/`**: REST API controllers for authentication, projects, tasks
+  - **`service/`**: Business logic layer
+  - **`repository/`**: Data access layer with JPA repositories
+  - **`entity/`**: JPA entities (User, Project, Task, ProjectMember)
+  - **`dto/`**: Data Transfer Objects for API requests/responses
+  - **`security/`**: JWT authentication and Spring Security configuration
+  - **`config/`**: Application configuration classes
+- **`src/main/resources/`**: Configuration and static files
+  - **`static/`**: Compiled Flutter web application
+  - **`application.properties`**: Database and application settings
 
-### Authentication
-- `POST /api/auth/signup` - User registration
-- `POST /api/auth/login` - User login
+### Frontend Structure (`frontend/`)
+- **`lib/`**: Flutter source code
+  - **`screens/`**: UI screens (ProjectsScreen, MyTasksScreen, LoginScreen)
+  - **`services/`**: API service layer for backend communication
+  - **`models/`**: Dart models for data structures
+  - **`widgets/`**: Reusable UI components
+  - **`main.dart`**: Application entry point
+- **`build/web/`**: Compiled web application (deployed to backend)
 
-### Projects
-- `GET /api/projects` - Get user projects
-- `POST /api/projects` - Create project (Admin only)
-- `DELETE /api/projects/{id}` - Delete project (Admin only)
+### Key Files
+- **`.gitignore`**: Git ignore configuration for both backend and frontend
+- **`README.md`**: Project documentation and setup instructions
 
-### Tasks
-- `GET /api/tasks/my` - Get user's tasks
-- `GET /api/tasks/all` - Get all tasks (Admin only)
-- `POST /api/tasks` - Create task (Admin only)
-- `PUT /api/tasks/{id}/status` - Update task status
-- `DELETE /api/tasks/{id}` - Delete task (Admin only)
-
-## Database Configuration
-
-The application uses MySQL database for persistent storage. The configuration is already set up in `application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3307/taskmanagerdb
-spring.datasource.username=root
-spring.datasource.password=root
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-```
-
-### Setting up MySQL with Docker
-
-```bash
-# Run MySQL container
-docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=taskmanagerdb -p 3307:3306 -d mysql:8.0
-
-# Create database (if needed)
-docker exec -it mysql-container mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS taskmanagerdb;"
-```
-
-## Deployment
-
-The application is ready for deployment on platforms like Railway, Heroku, or any cloud service with Java support.
-
-## Project Structure
-
-```
-├── backend/
-│   ├── src/main/java/com/taskmanager/
-│   │   ├── controller/     # REST API controllers
-│   │   ├── service/        # Business logic
-│   │   ├── repository/     # Data access layer
-│   │   ├── entity/         # Database entities
-│   │   ├── dto/           # Data transfer objects
-│   │   └── security/      # Security configuration
-│   └── src/main/resources/
-│       ├── static/        # Flutter web build
-│       └── application.properties
-└── frontend/
-    ├── lib/
-    │   ├── screens/       # Flutter screens
-    │   ├── services/      # API services
-    │   └── models/        # Data models
-    └── pubspec.yaml
-```
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
+---
+*This platform demonstrates a complete end-to-end integration of modern web technologies to solve real-world project management challenges.*

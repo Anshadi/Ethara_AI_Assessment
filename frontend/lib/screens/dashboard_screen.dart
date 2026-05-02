@@ -113,6 +113,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _buildStatsGrid(),
                           const SizedBox(height: 16),
                           _buildOverdueCard(),
+                          if (_userRole == 'ADMIN' && _dashboardData?['memberWorkload'] != null) ...[
+                            const SizedBox(height: 32),
+                            const Text(
+                              'Team Workload',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1A1A2E),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildWorkloadList(),
+                          ],
                           const SizedBox(height: 32),
                           const Text(
                             'Quick Access',
@@ -305,7 +318,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildOverdueCard() {
     final overdue = _dashboardData?['overdue'] ?? 0;
+    final total = _dashboardData?['total'] ?? 0;
+    final todo = _dashboardData?['todo'] ?? 0;
+    final done = _dashboardData?['done'] ?? 0;
+    
     final hasOverdue = overdue > 0;
+    
+    String statusText;
+    if (hasOverdue) {
+      statusText = 'Overdue Tasks — Act now!';
+    } else if (total == 0) {
+      statusText = 'No tasks yet';
+    } else if (done == total) {
+      statusText = 'All tasks completed!';
+    } else if (todo > 0) {
+      statusText = '$todo tasks waiting to start';
+    } else {
+      statusText = 'All tasks on track';
+    }
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -336,7 +367,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                overdue.toString(),
+                hasOverdue ? overdue.toString() : 'Success',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
@@ -344,13 +375,98 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
               Text(
-                hasOverdue ? 'Overdue Tasks — Act now!' : 'All tasks on track',
+                statusText,
                 style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWorkloadList() {
+    final workload = _dashboardData?['memberWorkload'] as List<dynamic>? ?? [];
+    if (workload.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(child: Text('No team members assigned to tasks yet.')),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: workload.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final item = workload[index];
+        final name = item['name'] as String;
+        final total = item['taskCount'] as int;
+        final done = item['completedCount'] as int;
+        final progress = total > 0 ? done / total : 0.0;
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 14,
+                        backgroundColor: const Color(0xFF1565C0).withOpacity(0.1),
+                        child: Text(
+                          _getInitials(name),
+                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF1565C0)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        name,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '$done / $total Tasks',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 8,
+                  backgroundColor: Colors.grey.shade100,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    progress == 1.0 ? Colors.green : const Color(0xFF1565C0),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

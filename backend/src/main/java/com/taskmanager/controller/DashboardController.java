@@ -21,7 +21,8 @@ public class DashboardController {
     @GetMapping
     public ResponseEntity<DashboardResponse> getDashboard(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
-        DashboardResponse response = dashboardService.getDashboard(userId);
+        String role = authentication.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+        DashboardResponse response = dashboardService.getDashboard(userId, role);
         return ResponseEntity.ok(response);
     }
 }

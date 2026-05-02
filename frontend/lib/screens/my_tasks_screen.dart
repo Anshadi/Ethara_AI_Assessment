@@ -131,14 +131,13 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                       if (v != null) {
                         try {
                           final members = await _apiService.getProjectMembers(v);
-                          print('Loaded members for project $v: $members');
+                          final currentUserId = await _apiService.getUserId();
                           setDialogState(() {
-                            projectMembers = members.where((m) => m['role'] != 'ADMIN').toList();
-                            print('Filtered members (non-admin): $projectMembers');
+                            // Filter out the current user (person creating the task)
+                            projectMembers = members.where((m) => m['id'] != currentUserId).toList();
                           });
                         } catch (e) {
                           print('Error loading members: $e');
-                          // Handle error silently
                         }
                       }
                     },

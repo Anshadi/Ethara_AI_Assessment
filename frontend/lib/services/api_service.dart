@@ -267,7 +267,14 @@ class ApiService {
     );
     
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['message'] ?? 'Failed to delete project');
+      String errorMessage;
+      try {
+        final body = jsonDecode(response.body);
+        errorMessage = body['message'] ?? 'Failed to delete project';
+      } catch (e) {
+        errorMessage = 'Failed to delete project (Status: ${response.statusCode})';
+      }
+      throw Exception(errorMessage);
     }
   }
   

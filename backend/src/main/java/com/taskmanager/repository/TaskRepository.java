@@ -11,4 +11,5 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByAssignedToId(Long userId);
     List<Task> findByDueDateBeforeAndStatusNot(LocalDate dueDate, Task.TaskStatus status);
+    void deleteByProjectId(Long projectId);
 }

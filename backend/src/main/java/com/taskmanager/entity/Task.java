@@ -2,15 +2,21 @@ package com.taskmanager.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "tasks")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "project")
+@EqualsAndHashCode(exclude = "project")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

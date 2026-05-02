@@ -9,24 +9,29 @@ import com.taskmanager.entity.ProjectMember;
 import com.taskmanager.entity.User;
 import com.taskmanager.repository.ProjectMemberRepository;
 import com.taskmanager.repository.ProjectRepository;
+import com.taskmanager.repository.TaskRepository;
 import com.taskmanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ProjectService {
 
         private final ProjectRepository projectRepository;
         private final UserRepository userRepository;
         private final ProjectMemberRepository projectMemberRepository;
+        private final TaskRepository taskRepository;
 
         public ProjectService(ProjectRepository projectRepository, UserRepository userRepository,
-                        ProjectMemberRepository projectMemberRepository) {
+                        ProjectMemberRepository projectMemberRepository, TaskRepository taskRepository) {
                 this.projectRepository = projectRepository;
                 this.userRepository = userRepository;
                 this.projectMemberRepository = projectMemberRepository;
+                this.taskRepository = taskRepository;
         }
 
         public ProjectResponse createProject(ProjectRequest request, Long createdBy) {
@@ -92,14 +97,25 @@ public class ProjectService {
                         throw new RuntimeException("You are not authorized to delete this project");
                 }
 
-                projectRepository.deleteById(projectId);
+                try {
+                        // Explicitly delete associated tasks and members to satisfy foreign key constraints
+                        taskRepository.deleteByProjectId(projectId);
+                        projectMemberRepository.deleteByProjectId(projectId);
+                        
+                        // Now delete the project
+                        projectRepository.delete(project);
+                        projectRepository.flush(); 
+                } catch (Exception e) {
+                        throw new RuntimeException("Failed to delete project: " + e.getMessage());
+                }
         }
 
         public List<UserResponse> getProjectMembers(Long projectId) {
-                Project project = projectRepository.findById(projectId)
-                                .orElseThrow(() -> new RuntimeException("Project not found"));
+                if (!projectRepository.existsById(projectId)) {
+                        throw new RuntimeException("Project not found");
+                }
 
-                return project.getMembers().stream()
+                return projectMemberRepository.findByProjectId(projectId).stream()
                                 .map(member -> new UserResponse(
                                                 member.getUser().getId(),
                                                 member.getUser().getName(),

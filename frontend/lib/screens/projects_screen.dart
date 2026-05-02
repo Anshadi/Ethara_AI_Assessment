@@ -217,6 +217,25 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       ),
                       label: Text(m['name'], style: const TextStyle(fontSize: 12)),
                       backgroundColor: const Color(0xFFE3F2FD),
+                      deleteIcon: const Icon(Icons.cancel, size: 14, color: Color(0xFF1565C0)),
+                      onDeleted: () async {
+                        try {
+                          await _apiService.removeMember(projectId, m['id']);
+                          Navigator.pop(context); // Close dialog
+                          _showAddMemberDialog(projectId, projectName); // Reopen to refresh
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Member removed successfully')),
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error removing member: $e')),
+                            );
+                          }
+                        }
+                      },
                     )).toList(),
                   ),
                   const Divider(height: 20),
@@ -625,7 +644,13 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       ),
                       const PopupMenuDivider(),
                       PopupMenuItem(
-                        onTap: () => _deleteProject(project['id'], project['name']),
+                        onTap: () {
+                          final projectId = project['id'];
+                          final projectName = project['name'];
+                          Future.delayed(const Duration(milliseconds: 200), () {
+                            _deleteProject(projectId, projectName);
+                          });
+                        },
                         child: const Row(children: [Icon(Icons.delete_outline, color: Colors.red), SizedBox(width: 8), Text('Delete', style: TextStyle(color: Colors.red))]),
                       ),
                     ],

@@ -51,7 +51,7 @@ public class ProjectController {
     public ResponseEntity<Void> deleteProject(@PathVariable Long projectId,
             Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
-        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        String role = authentication.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
         projectService.deleteProject(projectId, userId, role);
         return ResponseEntity.ok().build();
     }
