@@ -4,99 +4,137 @@ A professional full-stack project and task management system designed for collab
 
 ## Core Features
 
-- **Robust Security**: Secure user registration and login powered by JWT (JSON Web Tokens).
-- **Advanced Role-Based Access (RBAC)**: Distinct permissions for `ADMIN` and `MEMBER` roles to ensure data integrity and proper authorization.
+- **Robust Security**: User registration and login with JWT (JSON Web Tokens).
+- **Role-Based Access (RBAC)**: Distinct permissions for `ADMIN` and `MEMBER` roles.
 - **Dynamic Project Control**:
-  - Administrative creation and deletion of projects.
-  - Seamless team member management (adding and removing participants).
-- **Intelligent Task Tracking**:
-  - Detailed task creation with descriptions and due dates.
-  - Granular assignment capabilities to specific project members.
-  - Real-time status updates (Todo, In Progress, Done).
-- **Analytical Dashboard**:
-  - High-level overview of project health and task counts.
-  - **Team Workload Visualization**: Dedicated admin view to monitor member performance and task distribution.
-  - **Dynamic Status Reporting**: Smart alerts for overdue tasks and pending workloads.
+  - Create and delete projects.
+  - Add and remove team members from projects.
+- **Task Management**:
+  - Create tasks with descriptions and due dates.
+  - Assign tasks to project members.
+  - Update task status across Todo, In Progress, and Done.
+- **Dashboard Analytics**:
+  - Overview of project health and task counts.
+  - Workload visualization for team members.
+  - Overdue task reporting.
 
 ## Technical Architecture
 
-The system utilizes a modern, scalable tech stack to deliver a high-performance experience:
-
 ### Backend Architecture
-- **Framework**: Java 17 with Spring Boot 3.2.
-- **Security**: Spring Security integrated with JWT for stateless authentication.
-- **Data Layer**: Hibernate/JPA for efficient object-relational mapping.
-- **Database**: MySQL 8.0 for persistent, reliable storage.
-- **Transaction Management**: Atomic operations for complex deletions and updates.
+
+- **Framework**: Java 17 with Spring Boot.
+- **Security**: Spring Security + JWT authentication.
+- **Data Layer**: Hibernate/JPA.
+- **Database**: MySQL.
+- **Health Check**: `/api/health` endpoint for deployment monitoring.
 
 ### Frontend Experience
-- **Framework**: Flutter Web for a responsive, single-page application (SPA) experience.
-- **UI/UX**: Clean, modern Material Design interface with custom interactive components.
-- **State Management**: Reactive UI updates based on real-time API feedback.
+
+- **Framework**: Flutter Web.
+- **Routing**: Login, signup, dashboard, projects, and my tasks screens.
+- **API Layer**: Uses relative API paths via `frontend/lib/config/app_config.dart`.
 
 ## Deployment & Execution
 
-### Prerequisites
+### Railway Deployment
+
+The project now includes Railway deployment configuration in `railway.toml`.
+
+#### Required Railway environment variables
+
+Set these values in the Railway project settings:
+
+- `DATABASE_URL`
+  - Example: `jdbc:mysql://<host>:<port>/taskmanagerdb`
+  - Use the Railway MySQL connection string if you add a MySQL plugin.
+- `DB_USERNAME`
+  - Example: `root`
+- `DB_PASSWORD`
+  - Your MySQL password.
+- `JWT_SECRET`
+  - A strong secret for JWT signing.
+  - Do not keep the placeholder value in production.
+- `JWT_EXPIRATION`
+  - Example: `3600000`
+  - Token lifetime in milliseconds (1 hour).
+
+> Railway automatically provides the runtime `PORT` variable, which is already supported by `backend/src/main/resources/application.properties`.
+
+#### Important deployment settings
+
+- `healthcheckPath = "/api/health"`
+- `restartPolicyType = "ON_FAILURE"`
+
+### Local Development
+
+#### Prerequisites
+
 - Java JDK 17+
 - Maven 3.6+
 - Flutter SDK 3.x
-- MySQL Instance (Accessible via Docker or Local Installation)
+- MySQL instance (Docker or local install)
 
-### Quick Start Guide
+#### Local setup steps
 
-1. **Database Setup**:
-   Ensure a MySQL database is running. If using Docker:
+1. **Database**
+
    ```bash
    docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=taskmanagerdb -p 3307:3306 -d mysql:8.0
    ```
 
-2. **Frontend Build**:
-   Navigate to the `frontend` directory and compile the web application:
+2. **Build frontend**
+
    ```bash
    cd frontend
    flutter build web
    ```
 
-3. **Backend Integration**:
-   Copy the generated build from `frontend/build/web` to `backend/src/main/resources/static`.
+3. **Copy frontend build**
+   Copy `frontend/build/web` into `backend/src/main/resources/static`.
 
-4. **Launch Application**:
-   Navigate to the `backend` directory and start the Spring Boot server:
+4. **Run backend**
+
    ```bash
    cd backend
    mvn spring-boot:run
    ```
-   The application will be accessible at `http://localhost:8081`.
+
+5. **Browse**
+   Open `http://localhost:8081`.
 
 ## Project Organization
 
-The repository is structured to separate concerns and facilitate easy maintenance:
-
 ### Backend Structure (`backend/`)
-- **`src/main/java/com/taskmanager/`**: Core Java package
-  - **`controller/`**: REST API controllers for authentication, projects, tasks
-  - **`service/`**: Business logic layer
-  - **`repository/`**: Data access layer with JPA repositories
-  - **`entity/`**: JPA entities (User, Project, Task, ProjectMember)
-  - **`dto/`**: Data Transfer Objects for API requests/responses
-  - **`security/`**: JWT authentication and Spring Security configuration
-  - **`config/`**: Application configuration classes
-- **`src/main/resources/`**: Configuration and static files
-  - **`static/`**: Compiled Flutter web application
-  - **`application.properties`**: Database and application settings
+
+- `src/main/java/com/taskmanager/`
+  - `controller/`: REST controllers
+  - `service/`: business logic
+  - `repository/`: JPA repositories
+  - `entity/`: database entities
+  - `dto/`: request/response DTOs
+  - `security/`: JWT and Spring Security
+  - `config/`: configuration classes
+- `src/main/resources/`
+  - `static/`: compiled Flutter frontend assets
+  - `application.properties`: runtime configuration
 
 ### Frontend Structure (`frontend/`)
-- **`lib/`**: Flutter source code
-  - **`screens/`**: UI screens (ProjectsScreen, MyTasksScreen, LoginScreen)
-  - **`services/`**: API service layer for backend communication
-  - **`models/`**: Dart models for data structures
-  - **`widgets/`**: Reusable UI components
-  - **`main.dart`**: Application entry point
-- **`build/web/`**: Compiled web application (deployed to backend)
+
+- `lib/`
+  - `screens/`: UI screens
+  - `services/`: backend API integration
+  - `models/`: Dart data models
+  - `config/`: app configuration
+  - `main.dart`: entry point
+- `build/web/`: compiled Flutter web app
 
 ### Key Files
-- **`.gitignore`**: Git ignore configuration for both backend and frontend
-- **`README.md`**: Project documentation and setup instructions
+
+- `railway.toml`: Railway deployment configuration
+- `backend/src/main/resources/application.properties`: environment-aware backend settings
+- `frontend/lib/config/app_config.dart`: deployable API routing config
+- `README.md`: documentation and setup instructions
 
 ---
-*This platform demonstrates a complete end-to-end integration of modern web technologies to solve real-world project management challenges.*
+
+This repository is designed for both local development and deployment on Railway with environment-based configuration and a backend-served Flutter web frontend.
