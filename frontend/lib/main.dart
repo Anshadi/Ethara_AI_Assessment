@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
+import 'screens/signup_screen.dart';
+import 'screens/dashboard_screen.dart';
+import 'screens/projects_screen.dart';
+import 'screens/my_tasks_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +24,10 @@ class MyApp extends StatelessWidget {
       home: const LoginScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
+        '/signup': (context) => const SignupScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
+        '/projects': (context) => const ProjectsScreen(),
+        '/my-tasks': (context) => const MyTasksScreen(),
       },
     );
   }

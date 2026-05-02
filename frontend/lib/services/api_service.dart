@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/auth_response.dart';
+import '../config/app_config.dart';
 
 class ApiService {
-  static const String baseUrl = '/api';
+  static const String baseUrl = AppConfig.apiBaseUrl;
   
   Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();

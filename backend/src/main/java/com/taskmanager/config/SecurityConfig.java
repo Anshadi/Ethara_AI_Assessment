@@ -56,9 +56,8 @@ public class SecurityConfig {
                                 "/api/**")
                         .permitAll()
                         .anyRequest().permitAll())
-        // .addFilterBefore(jwtAuthenticationFilter,
-        // UsernamePasswordAuthenticationFilter.class); // Completely disabled for
-        // testing
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
         ;
 
         return http.build();

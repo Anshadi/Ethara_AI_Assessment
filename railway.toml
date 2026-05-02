@@ -9,3 +9,8 @@ CI = "false"
 # Deployment settings
 healthcheckPath = "/api/health"
 restartPolicyType = "ON_FAILURE"
+
+# Environment variables for production
+[deploy.env]
+JWT_SECRET = "your-production-jwt-secret-key-change-this"
+JWT_EXPIRATION = "3600000"
