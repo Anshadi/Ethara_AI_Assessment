@@ -2,6 +2,11 @@
 
 A professional full-stack project and task management system designed for collaborative team environments. This application provides a streamlined workflow for project leads and members to track progress, manage assignments, and maintain visibility over team productivity.
 
+## Live Deployment
+
+- **Application**: https://backend-production-f3ee.up.railway.app
+- **Health Check**: https://backend-production-f3ee.up.railway.app/api/health
+
 ## Core Features
 
 - **Robust Security**: User registration and login with JWT (JSON Web Tokens).
