@@ -1,0 +1,11 @@
+﻿[build]
+builder = "NIXPACKS"
+
+[build.env]
+# Build environment variables
+CI = "false"
+
+[deploy]
+# Deployment settings
+healthcheckPath = "/api/health"
+restartPolicyType = "ON_FAILURE"
